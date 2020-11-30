@@ -20,14 +20,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="97bb4748-b506-486c-addf-537ced06cf18" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Disaster-Response-Pipeline.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/disaster response pic.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/web.html" beforeDir="false" afterPath="$PROJECT_DIR$/app/web.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/templates/go.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -76,9 +69,9 @@
     </option>
   </component>
   <component name="WindowStateProjectService">
-    <state x="735" y="322" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1606655959891">
+    <state x="735" y="322" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1606745118578">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="735" y="322" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1606655959891" />
+    <state x="735" y="322" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1606745118578" />
   </component>
 </project>
