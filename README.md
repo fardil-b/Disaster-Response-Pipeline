@@ -41,9 +41,9 @@ write a machine learning pipeline that:
 
 3. Go to http://0.0.0.0:3001/
 
-<<<<<<< HEAD
-~~~~
-=======
 
-![](app-pic.png)
->>>>>>> 89f6c8bf79eec197f38e78f07a19f3b70d3bfd4f
+
+![app-pic](https://user-images.githubusercontent.com/61830624/100710695-62378b00-33b0-11eb-89f1-6fe8d0faa9f8.png)
+
+![app-pic2](https://user-images.githubusercontent.com/61830624/100710669-5350d880-33b0-11eb-9320-170fa42abc35.png)
+
