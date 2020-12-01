@@ -1,117 +1,116 @@
-# Process the data and save it in a database
-import os
-import numpy as np
+import sys
 import pandas as pd
 from sqlalchemy import create_engine
-import argparset
-
-CATEGORIES_FILENAME = 'disaster_categories.csv'
-MESSAGES_FILENAME = 'disaster_messages.csv'
-DATABASE_FILENAME = 'DisasterResponse.db'
-TABLE_NAME = 'DisasterResponse'
 
 
-def load_data(messages_filename, categories_filename):
+def load_data(messages_filepath='disaster_messages.csv', categories_filepath='disaster_categories.csv'):
     """
-    Load the data from the input files
+    Load messages and categories from dataset
+
     Args:
-        categories_filename (str): categories filename
-        messages_filename (str): messages filename
-    Returns:
-        df (pandas.DataFrame): dataframe containing the uncleaned dataset
+      message_filepath(string): the file path of messages.csv
+      categories_filepath(string): the file path of categories.csv
+
+    Return:
+      df(Dataframe): merged dataframe of messages + categories
     """
-    messages = pd.read_csv(messages_filename)
-    # messages.head()
-    categories = pd.read_csv(categories_filename)
-    # categories.head()
-    df = pd.merge(messages, categories, on='id')
-    # df.head()
-    return df
+    messages = pd.read_csv(messages_filepath)
+    categories = pd.read_csv(categories_filepath)
+    return messages.merge(categories, left_on='id', right_on='id')
 
 
 def clean_data(df):
     """
-    Clean the data
+    Clean up data:
+      1. Drop duplicates
+      2. Remove missing values
+      3. Clean categories
     Args:
-        df (pandas.DataFrame): dataframe containing the uncleaned dataset
-    Returns:
-        df (pandas.DataFrame): dataframe containing the cleaned dataset
+      df(Dataframe): merged dataframe of messages + categories from load_data()
+    Return:
+      df(Dataframe): cleaned dataframe
     """
-    categories = df.categories.str.split(pat=';', expand=True)
-    # categories.head()
-    row = categories.iloc[0, :]
-    category_colnames = row.apply(lambda x: x[:-2])
-    # print(category_colnames)
+
+    # spliting the columns name from values
+    categories = df['categories'].str.split(';', expand=True)
+    row = map(lambda x: x.split('-')[0], categories.iloc[0])
+
+    category_colnames = list(row)
     categories.columns = category_colnames
-    # categories.head()
-    for column in categories:
-        categories[column] = categories[column].str[-1]
+
+    for column in categories.columns:
+        # set each value to be the last character of the string
+        categories[column] = categories[column].apply(lambda x: x.split('-')[1])
+
+        # convert column from string to numeric
         categories[column] = categories[column].astype(int)
-    # categories.head()
-    df = df.drop('categories', axis=1)
-    # df.head()
-    df = pd.concat([df, categories], axis=1)
-    # df.head()
+
+    # set value 2 equal 1
+    categories.loc[categories['related'] == 2, 'related'] = 1
+
+    # drop categorie column and join with the messages
+    df = df.drop(['categories'], axis=1)
+    df = df.join(categories)
+
+    # remove duplicates
     df = df.drop_duplicates()
-    # df.duplicated().sum()
+
     return df
 
 
-def save_data(df, database_filename):
+def save_data(df, database_filename='DisasterResponse.db', table_name='DisasterResponse'):
     """
-    Save the data into the database. The destination table name is TABLE_NAME
+    Save the clean dataset into SQLite database
+
     Args:
-        df (pandas.DataFrame): dataframe containing the dataset
-        database_filename (str): database filename
+        df(Dataframe): the cleaned dataframe
+        database_filename(string): the file path to save file .db
+    Return:
+        None
     """
-    engine = create_engine('sqlite:///' + database_filename)
-    df.to_sql(TABLE_NAME, engine, index=False)
+    # drop table if exist
+    dbpath = 'sqlite:///' + database_filename
+    table = table_name
+    engine = create_engine(dbpath)
+    connection = engine.raw_connection()
+    cursor = connection.cursor()
+    command = "DROP TABLE IF EXISTS {};".format(table)
+    cursor.execute(command)
+    connection.commit()
+    cursor.close()
+
+    # create table
+    engine = create_engine(dbpath)
+    df.to_sql(table, engine, index=False)
 
 
-def parse_input_arguments():
-    """
-    Parse the command line arguments
-    Returns:
-        categories_filename (str): categories filename. Default value CATEGORIES_FILENAME
-        messages_filename (str): messages filename. Default value MESSAGES_FILENAME
-        database_filename (str): database filename. Default value DATABASE_FILENAME
-    """
-    parser = argparse.ArgumentParser(description="Disaster Response Pipeline Process Data")
-    parser.add_argument('--messages_filename', type=str, default=MESSAGES_FILENAME, help='Messages dataset filename')
-    parser.add_argument('--categories_filename', type=str, default=CATEGORIES_FILENAME,
-                        help='Categories dataset filename')
-    parser.add_argument('--database_filename', type=str, default=DATABASE_FILENAME,
-                        help='Database filename to save cleaned data')
-    args = parser.parse_args()
-    # print(args)
-    return args.messages_filename, args.categories_filename, args.database_filename
+def main():
+    print(len(sys.argv))
+    if len(sys.argv) == 4:
 
+        messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
 
-def process(messages_filename, categories_filename, database_filename):
-    """
-    Process the data and save it in a database
-    Args:
-        categories_filename (str): categories filename
-        messages_filename (str): messages filename
-        database_filename (str): database filename
-    """
-    # print(messages_filename)
-    # print(categories_filename)
-    # print(database_filename)
-    # print(os.getcwd())
+        print('Loading data...\n    MESSAGES: {}\n    CATEGORIES: {}'
+              .format(messages_filepath, categories_filepath))
+        df = load_data(messages_filepath, categories_filepath)
 
-    print('Loading data...\n    Messages: {}\n    Categories: {}'.format(messages_filename, categories_filename))
-    df = load_data(messages_filename, categories_filename)
+        print('Cleaning data...')
+        df = clean_data(df)
 
-    print('Cleaning data...')
-    df = clean_data(df)
+        print('Saving data...\n    DATABASE: {}'.format(database_filepath))
+        save_data(df, database_filepath)
 
-    print('Saving data...\n    Database: {}'.format(database_filename))
-    save_data(df, database_filename)
+        print('Cleaned data saved to database!')
 
-    print('Cleaned data saved to database!')
+    else:
+        print('Please provide the filepaths of the messages and categories ' \
+              'datasets as the first and second argument respectively, as ' \
+              'well as the filepath of the database to save the cleaned data ' \
+              'to as the third argument. \n\nExample: python process_data.py ' \
+              'disaster_messages.csv disaster_categories.csv ' \
+              'DisasterResponse.db')
+        print(sys.argv[1:])
 
 
 if __name__ == '__main__':
-    messages_filename, categories_filename, database_filename = parse_input_arguments()
-    process(messages_filename, categories_filename, database_filename)
+    main()
