@@ -42,3 +42,4 @@ write a machine learning pipeline that:
 3. Go to http://0.0.0.0:3001/
 
 
+![](app-pic.png)
