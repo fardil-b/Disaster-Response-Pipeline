@@ -5,8 +5,8 @@ import pandas as pd
 from sqlalchemy import create_engine
 import argparse
 
-CATEGORIES_FILENAME = 'categories.csv'
-MESSAGES_FILENAME = 'messages.csv'
+CATEGORIES_FILENAME = 'disaster_categories.csv'
+MESSAGES_FILENAME = 'disaster_messages.csv'
 DATABASE_FILENAME = 'DisasterResponse.db'
 TABLE_NAME = 'DisasterResponse'
 
