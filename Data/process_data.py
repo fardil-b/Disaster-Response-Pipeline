@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 from sqlalchemy import create_engine
-import argparse
+import argparset
 
 CATEGORIES_FILENAME = 'disaster_categories.csv'
 MESSAGES_FILENAME = 'disaster_messages.csv'
@@ -46,7 +46,7 @@ def clean_data(df):
     # categories.head()
     for column in categories:
         categories[column] = categories[column].str[-1]
-        categories[column] = categories[column].astype(np.int)
+        categories[column] = categories[column].astype(int)
     # categories.head()
     df = df.drop('categories', axis=1)
     # df.head()
